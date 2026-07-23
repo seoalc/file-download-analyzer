@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from app.services.api_client import download_all_files, read_downloaded_files
+from app.services.api_client import download_all_files, read_downloaded_files, calculate_statistics
 
 router = APIRouter()
 
@@ -30,6 +30,43 @@ async def download(request: Request):
 @router.get("/files", response_class=HTMLResponse)
 async def files(request: Request):
     stats = read_downloaded_files()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="files.html",
+        context={
+            "request": request,
+            "stats": stats
+        }
+    )
+
+@router.post("/calculate")
+async def calculate(request: Request):
+    form = await request.form()
+
+    selected_files = form.getlist("selected_files")
+
+    stats = calculate_statistics(selected_files)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="files.html",
+        context={
+            "request": request,
+            "stats": stats
+        }
+    )
+
+@router.post("/calculate-all")
+async def calculate_all(request: Request):
+    files = read_downloaded_files()
+
+    selected_files = [
+        file["file_name"]
+        for file in files["files"]
+    ]
+
+    stats = calculate_statistics(selected_files)
 
     return templates.TemplateResponse(
         request=request,

@@ -9,16 +9,76 @@
     <h1>Downloaded files</h1>
 
     <h2>Статистика по кажому файлу</h2>
-    <table border="1">
-        <tr>
-            <th>Файл</th>
-        </tr>
-        {% for file in stats.files %}
-        <tr>
-            <td>{{ file.file_name }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div><a href="/files">Вернуться к файлам</a></div>
+    {% if stats.total is defined %}
+
+        <table border="1">
+            <tr>
+                <th>Файл</th>
+                <th>0</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                <th>7</th>
+                <th>8</th>
+                <th>9</th>
+            </tr>
+            {% for file in stats.files %}
+            <tr>
+                <td>{{ file.file_name }}</td>
+                <td>{{ file.statistics.get("0", 0) }}</td>
+                <td>{{ file.statistics.get("1", 0) }}</td>
+                <td>{{ file.statistics.get("2", 0) }}</td>
+                <td>{{ file.statistics.get("3", 0) }}</td>
+                <td>{{ file.statistics.get("4", 0) }}</td>
+                <td>{{ file.statistics.get("5", 0) }}</td>
+                <td>{{ file.statistics.get("6", 0) }}</td>
+                <td>{{ file.statistics.get("7", 0) }}</td>
+                <td>{{ file.statistics.get("8", 0) }}</td>
+                <td>{{ file.statistics.get("9", 0) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    {% else %}
+        <form method="post" action="/calculate">
+            <table border="1">
+                <tr>
+                    <th>Выбрать</th>
+                    <th>Файл</th>
+                </tr>
+
+                {% for file in stats.files %}
+                <tr>
+                    <td>
+                        <input
+                            type="checkbox"
+                            name="selected_files"
+                            value="{{ file.file_name }}"
+                        >
+                    </td>
+
+                    <td>{{ file.file_name }}</td>
+                </tr>
+                {% endfor %}
+
+            </table>
+
+            <br>
+
+            <button type="submit">
+                Произвести расчёты по выбранным файлам
+            </button>
+        </form>
+    {% endif %}
+    <form method="post" action="/calculate-all">
+        <button type="submit">
+            Произвести расчёт по всем скачанным файлам
+        </button>
+    </form>
 
     
 </body>

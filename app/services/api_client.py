@@ -65,8 +65,6 @@ def read_downloaded_files():
 
     for file in folder_path.iterdir():
         if file.is_file():
-            print(file.name)
-
             content = file.read_text(encoding='utf-8')
             counter = Counter(content)
             file_statistics.append(
@@ -84,23 +82,45 @@ def calculate_statistics(selected_files):
     total_counter = Counter()
     file_statistics = []
 
-    for file in folder_path.iterdir():
-        if file.is_file():
-            print(file.name)
+    for file_name in selected_files:
+        file_path = folder_path / file_name
 
-            content = file.read_text(encoding='utf-8')
-            counter = Counter(content)
-            file_statistics.append(
-                {
-                    "file_name": file.name,
-                    "statistics": dict(counter)
-                }
-            )
-            total_counter.update(counter)
+        if not file_path.exists():
+            raise FileNotFoundError(file_name)
+
+        content = file_path.read_text(encoding='utf-8')
+
+        counter = Counter(content)
+        file_statistics.append(
+            {
+                "file_name": file_name,
+                "statistics": dict(counter)
+            }
+        )
+        total_counter.update(counter)
+
     return {
         "files": file_statistics,
         "total": dict(total_counter)
     }
+
+    # for file in folder_path.iterdir():
+    #     if file.is_file():
+    #         print(file.name)
+
+    #         content = file.read_text(encoding='utf-8')
+    #         counter = Counter(content)
+    #         file_statistics.append(
+    #             {
+    #                 "file_name": file.name,
+    #                 "statistics": dict(counter)
+    #             }
+    #         )
+    #         total_counter.update(counter)
+    # return {
+    #     "files": file_statistics,
+    #     "total": dict(total_counter)
+    # }
 
 def download_all_files():
     files = get_file_names()
